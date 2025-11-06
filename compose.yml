@@ -37,6 +37,8 @@ services:
       ANTHROPIC_BASE_URL: http://claude-proxy:8080
     depends_on:
       - claude-proxy
+    command: ["tail", "-f", "/dev/null"]
+    restart: unless-stopped
 
 volumes:
   claude-telemetry:

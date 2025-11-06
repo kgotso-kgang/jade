@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     vim \
     curl \
+    cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Ensure default node user has access to /usr/local/share
@@ -83,6 +84,9 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # Install Claude Code
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
+# Install Workshop for persistent memory
+RUN npm install -g @zachswift615/workshop
+
 # Install MCP Servers for JADE
 # Slack MCP Server (maintained by Zencoder)
 RUN npm install -g @zencoderai/slack-mcp-server
@@ -101,9 +105,14 @@ RUN ARCH=$(dpkg --print-architecture) && \
         -o /usr/local/bin/github-mcp-server && \
     chmod +x /usr/local/bin/github-mcp-server || echo "github-mcp-server installation skipped")
 
-# Copy entrypoint script
+# Copy entrypoint and cron scripts
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY jade-cron.sh /usr/local/bin/jade-cron.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/jade-cron.sh
+
+# Copy CLAUDE.md to user's .claude directory
+COPY CLAUDE.md /home/node/.claude/CLAUDE.md
+RUN chown node:node /home/node/.claude/CLAUDE.md
 
 USER node
 

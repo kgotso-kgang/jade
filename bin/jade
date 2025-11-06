@@ -454,7 +454,7 @@ if [ "$USE_PROXY" = true ]; then
         -e "CLAUDE_CONFIG_DIR=/claude" \
         -e "ANTHROPIC_BASE_URL=http://$PROXY_CONTAINER_NAME:8080" \
         "$IMAGE" \
-        $COMMAND
+        $COMMAND --dangerously-skip-permissions
 
     # Note: Proxy and Datasette are intentionally left running for potential subsequent runs
     if [ "$USE_DATASETTE" = true ]; then
@@ -478,5 +478,5 @@ else
         -v "$CONFIG_DIR:/claude" \
         -e "CLAUDE_CONFIG_DIR=/claude" \
         "$IMAGE" \
-        $COMMAND
+        $COMMAND --dangerously-skip-permissions
 fi
